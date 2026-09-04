@@ -47,14 +47,20 @@ function setCelebrationCurrent(id){
 }
 function finishCelebration(id){
   const c=state.celebrations.find(x=>x.id===id);if(!c)return;
-  if(!confirm(`Archiver Archange ${c.archangel} ${c.year} ?`))return;
+  const ok=confirm(`Confirmer la fin de la célébration Archange ${c.archangel} ${c.year} ?\n\nElle sera déplacée dans les Archives. Vous pourrez annuler cette action depuis les Archives.`);
+  if(!ok)return;
   c.status='finished';
   const next=[...state.celebrations].filter(x=>x.id!==id&&x.status!=='finished').sort((a,b)=>celebrationOrderValue(a)-celebrationOrderValue(b))[0];
   if(next){next.status='active';state.currentCelebrationId=next.id;state.adminCelebrationId=next.id;}
-  saveState(state);renderCelebrations();toast('Célébration archivée');
+  saveState(state);renderCelebrations();toast('Célébration archivée — restauration possible');
 }
 function restoreCelebration(id){
-  const c=state.celebrations.find(x=>x.id===id);if(!c)return;c.status='planned';saveState(state);renderCelebrations();toast('Célébration restaurée');
+  const c=state.celebrations.find(x=>x.id===id);if(!c)return;
+  const ok=confirm(`Restaurer Archange ${c.archangel} ${c.year} comme célébration en cours ?\n\nLa célébration actuellement en cours repassera dans « Prochaines célébrations » et aucune donnée ne sera supprimée.`);
+  if(!ok)return;
+  state.celebrations.forEach(x=>{if(x.status==='active')x.status='planned'});
+  c.status='active';state.currentCelebrationId=c.id;state.adminCelebrationId=c.id;
+  saveState(state);editCelebration(c.id);toast('Archivage annulé');
 }
 
 normalizeCelebrationStatuses();
@@ -71,7 +77,7 @@ editCelebration=function(id){
   state.adminCelebrationId=id;saveState(state);accent();
   const c=selected();if(typeof ensureFixedSteps==='function')ensureFixedSteps(c);saveState(state);
   const archived=c.status==='finished',isCurrent=c.id===state.currentCelebrationId&&!archived;
-  const action=archived?`<button class="btn" id="restoreC">Sortir des archives</button>`:isCurrent?`<button class="btn dark" id="finishC">Terminer et archiver</button>`:`<button class="btn dark" id="makeCurrentC">Mettre en cours</button>`;
+  const action=archived?`<button class="btn" id="restoreC">Annuler l’archivage</button>`:isCurrent?`<button class="btn dark" id="finishC">Terminer et archiver</button>`:`<button class="btn dark" id="makeCurrentC">Mettre en cours</button>`;
   panel.innerHTML=`${context()}<div class="card"><div class="eyebrow">${archived?'Archive':isCurrent?'Célébration en cours':'Célébration à venir'}</div><div class="section-head"><h2 style="margin:0">Archange ${esc(c.archangel)} ${esc(c.year)}</h2><div class="actions">${action}</div></div><div class="form-grid" style="margin-top:18px"><label class="field"><span>Archange</span><select id="eArch"><option ${c.archangel==='Michaël'?'selected':''}>Michaël</option><option ${c.archangel==='Gabriel'?'selected':''}>Gabriel</option><option ${c.archangel==='Raphaël'?'selected':''}>Raphaël</option><option ${c.archangel==='Ouriel'?'selected':''}>Ouriel</option></select></label><label class="field"><span>Année / période</span><input id="eYear" value="${esc(c.year)}"></label></div><div class="actions" style="margin-top:14px"><button class="btn primary" id="saveC">Enregistrer</button></div></div><div class="card section"><h2>Étapes</h2><div class="list">${(c.days||[]).map(dayCard).join('')}</div></div>`;
   saveC.onclick=()=>{c.archangel=eArch.value;c.year=eYear.value.trim()||c.year;saveState(state);accent();editCelebration(c.id);toast('Célébration enregistrée')};
   if(document.getElementById('makeCurrentC'))makeCurrentC.onclick=()=>setCelebrationCurrent(c.id);
