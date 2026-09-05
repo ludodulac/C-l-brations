@@ -47,6 +47,12 @@ body.admin-app{background:#fff}
 .admin-app .resource-card h3{margin:3px 0 5px}
 .admin-app .resource-card p{margin:4px 0}
 
+/* Les éléments navigables s'ouvrent directement au clic. */
+.admin-clickable{cursor:pointer;transition:background-color .12s ease,border-color .12s ease,transform .12s ease}
+.admin-clickable:hover{background:#f6f8fb}
+.admin-clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.admin-clickable:active{transform:translateY(1px)}
+
 /* Édition célébration : tout tient haut, étapes en grille. */
 .celebration-editor{display:grid;gap:8px}
 .celebration-settings{display:grid;grid-template-columns:minmax(180px,1fr) minmax(140px,.7fr) auto;gap:8px;align-items:end}
