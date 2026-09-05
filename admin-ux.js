@@ -25,6 +25,14 @@ showDayEventForm=function(dayKey,eventId=null){uxShowDayEventForm(dayKey,eventId
 const uxRenderInlineContentCreator=renderInlineContentCreator;
 renderInlineContentCreator=function(targetId,onCreated){uxRenderInlineContentCreator(targetId,onCreated);adminFocus(targetId)};
 
+// Navigation directe : les étapes (Préparation, mercredi, etc.) s'ouvrent en cliquant
+// sur toute la ligne. Le bouton "Modifier" devient inutile ; seules les vraies actions restent.
+dayCard=function(d){
+  const c=selected();
+  const events=state.events.filter(e=>e.celebrationId===c.id&&e.dayKey===d.key);
+  return `<div class="admin-row admin-clickable" role="button" tabindex="0" onclick="editDay('${d.key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editDay('${d.key}')}"><div><strong>${esc(d.label)}</strong><div class="meta">${esc(dayDateLabel(d))} · ${events.length} rendez-vous</div></div><div class="row-actions"><button class="btn danger" onclick="event.stopPropagation();removeDay('${d.key}')">Supprimer</button></div></div>`;
+};
+
 // Le toast historique est conservé comme point unique de retour utilisateur,
 // mais son rendu devient un vrai état d'interface : erreur très visible ou succès confirmé.
 const adminToast=document.getElementById('toast');
