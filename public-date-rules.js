@@ -24,23 +24,28 @@ function publicDayDate(d){
 }
 
 function contentVisual(c){
-  if(c.type==='Image'&&c.sourceType==='file')return `<img data-image-id="${c.id}" alt="${esc(c.name)}" class="public-inline-image">`;
-  if(c.hasCover)return `<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="public-inline-image">`;
+  const style='display:block!important;width:96px!important;height:96px!important;min-width:96px!important;max-width:96px!important;min-height:96px!important;max-height:96px!important;aspect-ratio:1/1!important;object-fit:cover!important;border-radius:10px;margin:0!important;background:#f3f4f6';
+  if(c.type==='Image'&&c.sourceType==='file')return `<img data-image-id="${c.id}" alt="${esc(c.name)}" class="public-inline-image" style="${style}">`;
+  if(c.hasCover)return `<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="public-inline-image" style="${style}">`;
   return '';
 }
-function contentWithVisual(c){const visual=contentVisual(c);return `<div class="public-content ${visual?'has-public-visual':''}">${visual}<div class="public-content-body"><div class="resources">${contentButtons(c)}</div></div></div>`}
+function contentWithVisual(c){
+  const visual=contentVisual(c);
+  const layout=visual?'display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:10px!important;align-items:start!important;width:100%!important':'width:100%';
+  return `<div class="public-content ${visual?'has-public-visual':''}" style="${layout}">${visual}<div class="public-content-body" style="min-width:0">${c.name?`<div style="font-weight:700;margin:0 0 6px">${icon(c.type)} ${esc(c.name)}</div>`:''}<div class="resources">${contentButtons(c)}</div></div></div>`
+}
 
 dayIntro=function(d){
   const links=(d.links||[]).filter(l=>l.url);
   const contents=(d.contentIds||[]).map(id=>state.contents.find(c=>c.id===id)).filter(Boolean).filter(c=>audienceOk(c.audience));
   const date=publicDayDate(d);
-  return `<div class="card" style="margin:8px 0 14px;border-left:5px solid var(--accent)"><h3 style="margin-top:0">${esc(d.label)}</h3>${date?`<div class="meta">${esc(date)}</div>`:''}${d.text?`<p>${esc(d.text).replace(/\n/g,'<br>')}</p>`:''}${links.length?`<div class="resources">${links.map(l=>`<a class="resource-link" href="${esc(l.url)}" target="_blank" rel="noopener">↗ ${esc(l.label||l.url)}</a>`).join('')}</div>`:''}${contents.length?`<div style="margin-top:12px">${contents.map(contentWithVisual).join('')}</div>`:''}</div>`;
+  return `<div class="card" style="margin:8px 0 14px;border-left:5px solid var(--accent)"><h3 style="margin-top:0">${esc(d.label)}</h3>${date?`<div class="meta">${esc(date)}</div>`:''}${d.text?`<p>${esc(d.text).replace(/\n/g,'<br>')}</p>`:''}${links.length?`<div class="resources">${links.map(l=>`<a class="resource-link" href="${esc(l.url)}" target="_blank" rel="noopener">↗ ${esc(l.label||l.url)}</a>`).join('')}</div>`:''}${contents.length?`<div style="margin-top:12px;display:grid;gap:8px">${contents.map(contentWithVisual).join('')}</div>`:''}</div>`;
 };
 
 eventHtml=function(e){
   const c=current(),d=dayForEvent(c,e);
   const contents=(e.contentIds||[]).map(id=>state.contents.find(x=>x.id===id)).filter(Boolean).filter(x=>audienceOk(x.audience));
-  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3><div class="meta">${esc(d?.label||'')} · ${esc(groupName(state,e.audience))}</div>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div class="public-event-contents">${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
+  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3><div class="meta">${esc(d?.label||'')} · ${esc(groupName(state,e.audience))}</div>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div class="public-event-contents" style="display:grid;gap:8px;margin-top:8px">${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
 };
 
 function keepActiveDayVisible(smooth=false){
