@@ -3,7 +3,7 @@ let publicCelebrationOpen=false;
 function celebrationPublicLabel(c){return `Archange ${c.archangel} ${c.year}`}
 function publicCelebrationChoices(){
   const list=[...state.celebrations].sort((a,b)=>String(a.year).localeCompare(String(b.year)));
-  return `<div class="celebration-home"><div class="public-page-title"><div class="eyebrow">Bienvenue</div><h1>Célébrations des Archanges</h1><p>Choisissez une célébration</p></div><div class="celebration-choice-grid">${list.map(c=>`<button class="celebration-choice" data-open-celebration="${c.id}" style="--celebration-color:${ARCHANGELS[c.archangel]||'#172033'}"><span class="eyebrow">Célébration</span><strong>${esc(celebrationPublicLabel(c))}</strong></button>`).join('')}</div></div>`;
+  return `<div class="celebration-home"><div class="public-page-title"><div class="eyebrow">Bienvenue</div><h1 style="font-size:.65rem;line-height:1.2;letter-spacing:0;margin:4px 0">Célébrations des Archanges</h1><p>Choisissez une célébration</p></div><div class="celebration-choice-grid">${list.map(c=>`<button class="celebration-choice" data-open-celebration="${c.id}" style="--celebration-color:${ARCHANGELS[c.archangel]||'#172033'}"><span class="eyebrow">Célébration</span><strong>${esc(celebrationPublicLabel(c))}</strong></button>`).join('')}</div></div>`;
 }
 function showCelebrationHome(updateHistory=false){
   publicCelebrationOpen=false;
