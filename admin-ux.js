@@ -24,3 +24,32 @@ showDayEventForm=function(dayKey,eventId=null){uxShowDayEventForm(dayKey,eventId
 
 const uxRenderInlineContentCreator=renderInlineContentCreator;
 renderInlineContentCreator=function(targetId,onCreated){uxRenderInlineContentCreator(targetId,onCreated);adminFocus(targetId)};
+
+// Le toast historique est conservé comme point unique de retour utilisateur,
+// mais son rendu devient un vrai état d'interface : erreur très visible ou succès confirmé.
+const adminToast=document.getElementById('toast');
+if(adminToast){
+  adminToast.setAttribute('role','status');
+  adminToast.setAttribute('aria-live','polite');
+  const errorWords=/indiquez|choisissez|saisissez|doit|gardez|existe déjà|attention|impossible|erreur/i;
+  const successWords=/enregistr|ajout|modifi|associ|retir|supprim|conserv/i;
+  const toastObserver=new MutationObserver(()=>{
+    const raw=adminToast.textContent.trim();
+    if(!raw)return;
+    const isError=errorWords.test(raw);
+    adminToast.classList.toggle('error',isError);
+    adminToast.classList.toggle('success',!isError&&successWords.test(raw));
+    if(isError){
+      adminToast.setAttribute('role','alert');
+      const clean=raw.replace(/^attention\s*[—:-]?\s*/i,'');
+      if(/^indiquez un titre$/i.test(clean))adminToast.textContent='Attention — ajoutez un titre';
+      else if(/^choisissez un fichier$/i.test(clean))adminToast.textContent='Attention — choisissez un fichier';
+      else if(/^indiquez un lien$/i.test(clean))adminToast.textContent='Attention — ajoutez un lien';
+      else if(!/^attention/i.test(raw))adminToast.textContent='Attention — '+clean.charAt(0).toLowerCase()+clean.slice(1);
+    }else{
+      adminToast.setAttribute('role','status');
+      if(successWords.test(raw)&&!raw.startsWith('✓'))adminToast.textContent='✓ '+raw;
+    }
+  });
+  toastObserver.observe(adminToast,{childList:true,characterData:true,subtree:true});
+}
