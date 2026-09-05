@@ -1,46 +1,71 @@
-/* Administration plus dense : moins de hauteur, mêmes fonctions. */
-.admin-shell{gap:16px}
-.admin-shell .card{padding:16px}
-.admin-shell .section{margin-top:16px}
-.admin-shell .section-head{margin-bottom:8px;align-items:center}
-.admin-shell h2{margin:0 0 12px;font-size:1.2rem}
-.admin-shell h3{margin:14px 0 8px;font-size:1rem}
-.admin-shell h4{margin:12px 0 7px}
-.admin-shell .form-grid{gap:9px 12px}
-.admin-shell .field{gap:4px}
-.admin-shell .field>span{font-size:.82rem;font-weight:700;color:var(--muted)}
-.admin-shell input,.admin-shell select,.admin-shell textarea{padding:8px 10px;border-radius:10px}
-.admin-shell textarea{min-height:74px;resize:vertical}
-.admin-shell .actions{gap:6px}
-.admin-shell .btn{padding:8px 12px}
-.admin-shell .btn.small{padding:6px 9px}
-.admin-shell .admin-row{padding:10px 12px}
-.admin-shell .list{gap:8px}
-.admin-shell .notice{padding:10px 12px}
-.admin-shell .check{padding:8px}
-.admin-shell .searchbar{margin:8px 0 12px}
-.admin-shell .type-grid{gap:6px}
-.admin-shell .type-card{padding:10px 8px}
+/* Administration compacte : priorité à l'information utile, pas au vide. */
+body>.top .top-inner{max-width:1180px;padding:8px 14px;min-height:52px}
+body>.top .eyebrow{font-size:.68rem}
+body>.top .brand{font-size:.95rem}
+body>.top .btn{padding:7px 11px}
+body>.container{max-width:1180px;padding:12px 14px 36px}
+
+/* La navigation ne gaspille plus une colonne entière. */
+.admin-shell{display:block!important}
+.admin-nav{display:flex!important;gap:6px;overflow-x:auto;margin:0 0 10px;padding:0 0 6px;border-bottom:1px solid var(--line)}
+.admin-nav .btn{flex:0 0 auto;white-space:nowrap;padding:7px 12px}
+#panel{min-width:0}
+
+/* Le contexte répété est inutile : la navigation et le titre de la vue suffisent. */
+.admin-context{display:none!important}
+
+.admin-shell .card{padding:12px 14px;border-radius:12px}
+.admin-shell .section{margin-top:10px}
+.admin-shell .section-head{margin-bottom:7px;align-items:center}
+.admin-shell .eyebrow{font-size:.68rem;margin-bottom:3px}
+.admin-shell h2{margin:0 0 8px;font-size:1.08rem;line-height:1.2}
+.admin-shell h3{margin:10px 0 6px;font-size:.96rem}
+.admin-shell h4{margin:9px 0 5px;font-size:.9rem}
+.admin-shell .form-grid{gap:7px 10px}
+.admin-shell .field{gap:3px}
+.admin-shell .field>span{font-size:.76rem;font-weight:700;color:var(--muted)}
+.admin-shell input,.admin-shell select,.admin-shell textarea{padding:7px 9px;border-radius:9px;min-height:36px}
+.admin-shell textarea{min-height:60px;resize:vertical}
+.admin-shell .actions{gap:6px;margin-top:9px!important}
+.admin-shell .btn{padding:7px 11px}
+.admin-shell .btn.small{padding:5px 8px}
+.admin-shell .admin-row{padding:8px 10px;border-radius:10px;min-height:44px}
+.admin-shell .admin-row .meta{font-size:.78rem}
+.admin-shell .list{gap:6px}
+.admin-shell .notice{padding:8px 10px}
+.admin-shell .check{padding:7px}
+.admin-shell .searchbar{margin:6px 0 9px}
+.admin-shell .type-grid{gap:5px}
+.admin-shell .type-card{padding:8px 6px}
+.admin-shell .badge{padding:3px 7px}
+
+/* Les blocs de premier niveau ne doivent pas ressembler à de grandes affiches. */
+.admin-shell>.admin-nav+section>.card:first-child{margin-top:0}
+.admin-shell .card.section+.actions{margin-top:10px!important}
 
 /* Retour utilisateur : devant, centré, impossible à manquer. */
-.toast{left:50%!important;right:auto!important;top:18px!important;bottom:auto!important;transform:translateX(-50%)!important;min-width:min(420px,calc(100vw - 28px));max-width:calc(100vw - 28px);text-align:center;font-weight:800;box-shadow:0 10px 32px rgba(23,32,51,.20);border:1px solid transparent;padding:12px 18px}
+.toast{left:50%!important;right:auto!important;top:14px!important;bottom:auto!important;transform:translateX(-50%)!important;min-width:min(420px,calc(100vw - 28px));max-width:calc(100vw - 28px);text-align:center;font-weight:800;box-shadow:0 10px 32px rgba(23,32,51,.20);border:1px solid transparent;padding:10px 16px}
 .toast.error{background:#fff1f0!important;color:#b42318!important;border-color:#f3b5b0}
 .toast.success{background:#ecfdf3!important;color:#067647!important;border-color:#abefc6}
 
-@media(max-width:850px){
-  .admin-shell{display:block}
-  .admin-nav{display:flex;overflow-x:auto;gap:6px;margin-bottom:12px;padding-bottom:2px}
-  .admin-nav .btn{white-space:nowrap;flex:0 0 auto}
+@media(min-width:700px){
   .admin-shell .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .admin-shell .field.full{grid-column:1/-1}
-  .admin-shell .card{padding:13px}
-  .admin-shell .section{margin-top:12px}
-  .admin-shell .admin-row{align-items:flex-start}
-  .admin-shell .row-actions{gap:5px}
 }
-@media(max-width:560px){
+@media(max-width:699px){
+  body>.top .top-inner{display:flex;flex-direction:row;align-items:center;padding:7px 10px}
+  body>.top .brand{font-size:.82rem}
+  body>.top .eyebrow{display:none}
+  body>.container{padding:8px 10px 28px}
+  .admin-nav{margin-bottom:8px}
+  .admin-shell .card{padding:10px}
+  .admin-shell .section{margin-top:8px}
   .admin-shell .form-grid{grid-template-columns:1fr}
   .admin-shell .field.full{grid-column:auto}
+  .admin-shell .admin-row{align-items:flex-start}
+  .admin-shell .row-actions{gap:4px}
+}
+@media(max-width:520px){
   .admin-shell .admin-row{display:grid}
   .admin-shell .row-actions{width:100%}
   .admin-shell .row-actions .btn{flex:1}
