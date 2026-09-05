@@ -1,0 +1,59 @@
+let libraryFamily='audio';
+let libraryAudioKind='all';
+
+function contentEventRefs(contentId){
+  return state.events.filter(e=>(e.contentIds||[]).includes(contentId)).map(e=>{
+    const cel=state.celebrations.find(c=>c.id===e.celebrationId);
+    const day=cel?.days?.find(d=>d.key===e.dayKey);
+    return {cel,day,event:e};
+  });
+}
+function contentEventMeta(c){
+  const refs=contentEventRefs(c.id);if(!refs.length)return '';
+  return `<div class="content-event-meta">${refs.map(x=>`${esc(x.day?.label||'')} ${x.event.time?`· ${esc(x.event.time)}`:''} ${x.event.title?`· ${esc(x.event.title)}`:''}`).join('<br>')}</div>`;
+}
+function libraryMatches(c){
+  if(!audienceOk(c.audience))return false;
+  if(libraryFamily==='audio'){
+    if(c.type!=='Audio')return false;
+    if(libraryAudioKind==='chant')return c.category==='Chants audio';
+    if(libraryAudioKind==='other')return c.category!=='Chants audio';
+    return true;
+  }
+  if(libraryFamily==='video')return c.type==='Vidéo';
+  if(libraryFamily==='text')return c.type==='Texte';
+  if(libraryFamily==='image')return c.type==='Image';
+  if(libraryFamily==='pdf')return c.type==='PDF';
+  return false;
+}
+function simpleLibraryCard(c){
+  const visual=c.type==='Image'&&c.sourceType==='file'?`<img data-image-id="${c.id}" alt="${esc(c.name)}" class="library-thumb">`:c.hasCover?`<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="library-thumb">`:'';
+  return `<article class="resource-card simple-library-card">${visual}<div class="resource-type">${esc(c.type)}${c.type==='Audio'&&c.category?` · ${esc(c.category)}`:''}</div><h3>${esc(c.name)}</h3>${c.description?`<p class="muted">${esc(c.description)}</p>`:''}${contentEventMeta(c)}<div class="resources">${contentButtons(c)}</div></article>`;
+}
+function renderLibrary(){
+  const list=state.contents.filter(libraryMatches);
+  const audioSubs=libraryFamily==='audio'?`<div class="library-audio-tabs"><button class="chip ${libraryAudioKind==='all'?'active':''}" data-audio-kind="all">Tous</button><button class="chip ${libraryAudioKind==='chant'?'active':''}" data-audio-kind="chant">Chants</button><button class="chip ${libraryAudioKind==='other'?'active':''}" data-audio-kind="other">Autres audios</button></div>`:'';
+  library.innerHTML=`<div class="library-fixed-head"><div class="section-head"><div><div class="eyebrow">Bibliothèque</div><h2>Contenus</h2></div></div><div class="library-main-tabs"><button class="btn ${libraryFamily==='audio'?'primary':''}" data-library-family="audio">Tous les audios</button><button class="btn ${libraryFamily==='video'?'primary':''}" data-library-family="video">Toutes les vidéos</button><button class="btn ${libraryFamily==='text'?'primary':''}" data-library-family="text">Tous les textes</button><button class="btn ${libraryFamily==='image'?'primary':''}" data-library-family="image">Toutes les images</button></div>${audioSubs}</div><div class="library-scroll"><div class="grid3">${list.length?list.map(simpleLibraryCard).join(''):'<div class="notice">Aucun contenu disponible.</div>'}</div></div>`;
+  library.querySelectorAll('[data-library-family]').forEach(b=>b.onclick=()=>{libraryFamily=b.dataset.libraryFamily;libraryAudioKind='all';renderLibrary()});
+  library.querySelectorAll('[data-audio-kind]').forEach(b=>b.onclick=()=>{libraryAudioKind=b.dataset.audioKind;renderLibrary()});
+  hydrateDynamic(library);
+}
+
+openContentFamily=function(category){
+  if(category==='Chants audio'){libraryFamily='audio';libraryAudioKind='chant'}
+  else if(category==='Audios parlés'||category==='Audio'){libraryFamily='audio';libraryAudioKind='other'}
+  else if(category==='Vidéos'){libraryFamily='video';libraryAudioKind='all'}
+  else if(category==='Textes'){libraryFamily='text';libraryAudioKind='all'}
+  else if(category==='Images'){libraryFamily='image';libraryAudioKind='all'}
+  else if(category==='PDF'){libraryFamily='pdf';libraryAudioKind='all'}
+  showTab('library');renderLibrary();
+};
+
+const libraryStyle=document.createElement('style');
+libraryStyle.textContent=`
+body.public-app #library:not(.hidden){display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden!important;gap:10px}
+.library-fixed-head{display:grid;gap:8px}.library-fixed-head .section-head{margin:0}.library-main-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.library-main-tabs .btn{white-space:normal}.library-audio-tabs{display:flex;gap:7px;flex-wrap:wrap}.library-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:2px}.content-event-meta{font-size:.72rem;color:var(--muted);margin:7px 0 10px;line-height:1.35}.library-thumb{width:100%;max-height:180px;object-fit:contain;border-radius:12px;margin-bottom:10px;background:#f3f4f6}
+@media(max-width:850px){.library-main-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.library-main-tabs .btn{font-size:.7rem;padding:7px 5px;min-height:38px}.library-audio-tabs{gap:5px}.library-audio-tabs .chip{font-size:.7rem;padding:6px 9px}.simple-library-card{padding:12px}.simple-library-card h3{font-size:.95rem;margin:5px 0}.simple-library-card .muted{font-size:.78rem;margin:5px 0}}
+`;
+document.head.appendChild(libraryStyle);
+renderLibrary();
