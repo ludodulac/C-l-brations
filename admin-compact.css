@@ -53,11 +53,11 @@ body.admin-app{background:#fff}
 .admin-clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .admin-clickable:active{transform:translateY(1px)}
 
-/* Édition célébration : tout tient haut, étapes en grille. */
+/* Édition célébration : les 7 étapes se lisent de haut en bas, puis colonne suivante. */
 .celebration-editor{display:grid;gap:8px}
 .celebration-settings{display:grid;grid-template-columns:minmax(180px,1fr) minmax(140px,.7fr) auto;gap:8px;align-items:end}
 .celebration-settings .field{min-width:0}
-.steps-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+.steps-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,auto);grid-auto-flow:column;gap:6px!important}
 .steps-grid .admin-row{height:100%}
 
 /* Édition d'étape : le principal en haut, contenus/rendez-vous côte à côte. */
@@ -90,7 +90,8 @@ body.admin-app{background:#fff}
   .admin-main{padding:7px 8px 22px!important}
   .celebration-settings{grid-template-columns:1fr 1fr}
   .celebration-settings .btn{grid-column:1/-1;justify-self:start}
-  .steps-grid,.day-editor-columns{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}
+  .day-editor-columns{grid-template-columns:1fr}
   .day-editor-main{grid-template-columns:1fr}
   .admin-app .form-grid{grid-template-columns:1fr}
   .admin-app .field.full{grid-column:auto}
