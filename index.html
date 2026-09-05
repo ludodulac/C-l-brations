@@ -6,6 +6,27 @@
 <title>Célébrations des Archanges</title>
 <link rel="stylesheet" href="styles.css?v=35">
 <link rel="stylesheet" href="public-layout-fixes.css?v=1">
+<style>
+/* Correctif final chargé directement dans la page : aucune dépendance au cache CSS. */
+body.public-app #program img[data-image-id],
+body.public-app #program img[data-cover-id]{
+  display:block!important;width:96px!important;min-width:96px!important;max-width:96px!important;
+  height:96px!important;min-height:96px!important;max-height:96px!important;aspect-ratio:1/1!important;
+  object-fit:cover!important;margin:0!important;border-radius:10px!important
+}
+body.public-app #program .public-content:has(img[data-image-id]),
+body.public-app #program .public-content:has(img[data-cover-id]){
+  display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:10px!important;align-items:start!important
+}
+body.public-app #program .public-content:has(img[data-image-id]) .public-content-body,
+body.public-app #program .public-content:has(img[data-cover-id]) .public-content-body,
+body.public-app #program .public-content:has(img[data-image-id]) .resources,
+body.public-app #program .public-content:has(img[data-cover-id]) .resources{min-width:0!important}
+@media(max-width:850px){
+  body.public-app #program img[data-image-id],body.public-app #program img[data-cover-id]{width:72px!important;min-width:72px!important;max-width:72px!important;height:72px!important;min-height:72px!important;max-height:72px!important}
+  body.public-app #program .public-content:has(img[data-image-id]),body.public-app #program .public-content:has(img[data-cover-id]){grid-template-columns:72px minmax(0,1fr)!important}
+}
+</style>
 </head>
 <body class="public-app">
 <header class="top"><div class="top-inner"><button class="brand brand-home" id="brandHome" type="button" aria-label="Retour à l'accueil">Célébrations des Archanges</button><nav class="nav"><button class="nav-btn active" data-tab="program">Programme</button><button class="nav-btn" data-tab="library">Bibliothèque</button><a class="nav-btn" href="admin.html">Administration</a></nav></div></header>
@@ -19,5 +40,29 @@
 <script src="public-content-nav.js?v=33"></script>
 <script src="public-celebration-shell.js?v=34"></script>
 <script src="public-library-simple.js?v=36"></script>
+<script>
+/* Filet de sécurité pour les anciens rendus qui gardent des styles inline. */
+(function(){
+  function compactProgramImages(){
+    document.querySelectorAll('#program img[data-image-id],#program img[data-cover-id]').forEach(function(img){
+      var mobile=window.matchMedia('(max-width:850px)').matches,size=mobile?'72px':'96px';
+      ['width','min-width','max-width','height','min-height','max-height'].forEach(function(p){img.style.setProperty(p,size,'important')});
+      img.style.setProperty('object-fit','cover','important');
+      img.style.setProperty('aspect-ratio','1 / 1','important');
+      img.style.setProperty('margin','0','important');
+      var box=img.closest('.public-content');
+      if(box){
+        box.style.setProperty('display','grid','important');
+        box.style.setProperty('grid-template-columns',size+' minmax(0,1fr)','important');
+        box.style.setProperty('gap','10px','important');
+        box.style.setProperty('align-items','start','important');
+      }
+    });
+  }
+  compactProgramImages();
+  new MutationObserver(compactProgramImages).observe(document.getElementById('program'),{childList:true,subtree:true});
+  window.addEventListener('resize',compactProgramImages);
+})();
+</script>
 </body>
 </html>
