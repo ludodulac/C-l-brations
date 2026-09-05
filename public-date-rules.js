@@ -29,10 +29,19 @@ function contentVisual(c){
   if(c.hasCover)return `<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="public-inline-image" style="${style}">`;
   return '';
 }
+function sharedContentButtons(c){
+  if(c.type==='Audio'&&c.sourceType==='file')return `<span style="width:100%"><div data-audio-id="${c.id}"></div><button class="resource-link" onclick="openStoredFile(state.contents.find(x=>x.id===${c.id}),true)">Télécharger</button></span>`;
+  if((c.type==='PDF'||c.type==='Image')&&c.sourceType==='file')return `<button class="resource-link" onclick="openStoredFile(state.contents.find(x=>x.id===${c.id}),false)">Voir</button><button class="resource-link" onclick="openStoredFile(state.contents.find(x=>x.id===${c.id}),true)">Télécharger</button>`;
+  if(c.type==='Texte'&&c.sourceType==='text')return `<button class="resource-link" onclick="alert(${JSON.stringify(c.text||'')})">Voir</button>`;
+  if(c.url)return `<a class="resource-link" href="${esc(c.url)}" target="_blank" rel="noopener">Voir</a>`;
+  if(c.sourceType==='file')return `<button class="resource-link" onclick="openStoredFile(state.contents.find(x=>x.id===${c.id}),false)">Voir</button><button class="resource-link" onclick="openStoredFile(state.contents.find(x=>x.id===${c.id}),true)">Télécharger</button>`;
+  return '';
+}
 function contentWithVisual(c){
   const visual=contentVisual(c);
   const layout=visual?'display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:10px!important;align-items:start!important;width:100%!important':'width:100%';
-  return `<div class="public-content ${visual?'has-public-visual':''}" style="${layout}">${visual}<div class="public-content-body" style="min-width:0">${c.name?`<div style="font-weight:700;margin:0 0 6px">${icon(c.type)} ${esc(c.name)}</div>`:''}${c.description?`<p class="muted" style="margin:0 0 8px;white-space:pre-line">${esc(c.description)}</p>`:''}<div class="resources">${contentButtons(c)}</div></div></div>`
+  const actions=sharedContentButtons(c);
+  return `<div class="public-content ${visual?'has-public-visual':''}" style="${layout}">${visual}<div class="public-content-body" style="min-width:0">${c.name?`<div style="font-weight:700;margin:0 0 6px">${icon(c.type)} ${esc(c.name)}</div>`:''}<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px">${c.description?`<span class="muted" style="white-space:pre-line;flex:1 1 260px">${esc(c.description)}</span>`:''}${actions?`<span class="resources" style="display:flex;flex-wrap:wrap;gap:6px;margin:0">${actions}</span>`:''}</div></div></div>`
 }
 
 dayIntro=function(d){
