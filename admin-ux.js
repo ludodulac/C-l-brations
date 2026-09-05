@@ -20,7 +20,27 @@ const uxEditContent=editContent;
 editContent=function(id){uxEditContent(id);adminTop()};
 
 const uxShowDayEventForm=showDayEventForm;
-showDayEventForm=function(dayKey,eventId=null){uxShowDayEventForm(dayKey,eventId);adminFocus('dayEventForm')};
+showDayEventForm=function(dayKey,eventId=null){
+  uxShowDayEventForm(dayKey,eventId);
+  const target=document.getElementById('dayEventForm');
+  const grid=target?.querySelector('.check-grid');
+  const heading=grid?.previousElementSibling;
+  if(grid){
+    grid.hidden=true;
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='btn small';
+    button.textContent='Associer un contenu existant';
+    button.setAttribute('aria-expanded','false');
+    button.onclick=()=>{
+      grid.hidden=!grid.hidden;
+      button.setAttribute('aria-expanded',String(!grid.hidden));
+      if(!grid.hidden)grid.scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    if(heading){heading.replaceWith(button)}else{grid.before(button)}
+  }
+  adminFocus('dayEventForm');
+};
 
 const uxRenderInlineContentCreator=renderInlineContentCreator;
 renderInlineContentCreator=function(targetId,onCreated){uxRenderInlineContentCreator(targetId,onCreated);adminFocus(targetId)};
