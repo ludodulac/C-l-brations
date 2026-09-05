@@ -1,0 +1,31 @@
+body.public-app .top-inner{display:grid!important;grid-template-columns:1fr!important;justify-items:center!important;gap:8px!important;padding:10px 14px!important}
+body.public-app .brand{font-size:.9rem!important;text-align:center!important;border:0!important;background:transparent!important;padding:0!important}
+body.public-app .nav{width:min(100%,560px)!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+body.public-app .nav-btn{width:100%!important;text-align:center!important;padding:7px 10px!important;font-size:.8rem!important}
+body.public-app .footer{display:flex!important;flex:0 0 auto!important;justify-content:center!important;border-top:1px solid var(--line)!important;padding:6px 10px!important;background:#fff!important}
+body.public-app .footer .admin-footer-link{font-size:.72rem!important;padding:5px 10px!important;color:var(--muted)!important;text-decoration:none!important;border:1px solid var(--line)!important;border-radius:999px!important;background:#fff!important}
+.public-page-title{display:grid!important;gap:3px!important}
+.public-page-title .eyebrow{font-size:.72rem!important}
+.public-page-title p{font-size:.92rem!important;margin:0!important}
+.celebration-home{gap:14px!important}
+.celebration-choice{padding:14px 12px!important}
+.celebration-page-head{display:grid!important;grid-template-columns:1fr!important;justify-items:center!important;text-align:center!important;gap:6px!important;padding:9px 12px!important}
+.celebration-page-head .celebration-title-block{display:grid!important;gap:2px!important;justify-items:center!important}
+.celebration-page-head h1{margin:0!important;font-size:1.12rem!important;line-height:1.15!important}
+.celebration-page-head .date-range{font-size:.76rem!important;line-height:1.2!important}
+.celebration-page-head .chips{justify-content:center!important}
+@media(max-width:850px){
+  body.public-app .top-inner{padding:7px 10px!important;gap:6px!important}
+  body.public-app .brand{font-size:.82rem!important}
+  body.public-app .nav{width:100%!important;gap:5px!important}
+  body.public-app .nav-btn{padding:6px 8px!important;font-size:.72rem!important}
+  .celebration-home{gap:10px!important;align-content:start!important;padding-top:4px!important}
+  .public-page-title .eyebrow{font-size:.66rem!important}
+  .public-page-title p{font-size:.82rem!important}
+  .celebration-page-head{padding:7px 9px!important;gap:3px!important;border-radius:13px!important}
+  .celebration-page-head h1{font-size:.98rem!important}
+  .celebration-page-head .date-range{font-size:.66rem!important}
+  .celebration-page-head .chips{display:none!important}
+  body.public-app .footer{padding:4px 8px!important}
+  body.public-app .footer .admin-footer-link{font-size:.64rem!important;padding:4px 8px!important}
+}
