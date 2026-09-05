@@ -2,11 +2,15 @@
 // Un retrait ici ne supprime jamais le contenu de la bibliothèque.
 let dayContentPickerOpen=false;
 
+// Navigation directe : les lignes ouvrent l'élément, les boutons restent réservés aux actions distinctes.
+dayCard=function(d){const c=selected(),events=state.events.filter(e=>e.celebrationId===c.id&&e.dayKey===d.key);return `<div class="admin-row admin-clickable" role="button" tabindex="0" onclick="editDay('${d.key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editDay('${d.key}')}" ><div><strong>${esc(d.label)}</strong><div class="meta">${esc(dayDateLabel(d))} · ${events.length} rendez-vous</div></div></div>`};
+eventRow=function(e){return `<div class="admin-row admin-clickable" role="button" tabindex="0" onclick="showDayEventForm('${e.dayKey}',${e.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showDayEventForm('${e.dayKey}',${e.id})}"><div><strong>${esc(e.time||'—')} — ${esc(e.title)}</strong><div class="meta">${esc(groupName(state,e.audience))}</div></div><div class="row-actions"><button class="btn small danger" onclick="event.stopPropagation();removeEvent(${e.id},'${e.dayKey}')">Supprimer</button></div></div>`};
+
 function dayLinkedContentRows(d){
   const ids=d.contentIds||[];
   const rows=ids.map(id=>state.contents.find(c=>c.id===id)).filter(Boolean);
   if(!rows.length)return '<div class="notice">Aucun contenu.</div>';
-  return `<div class="list">${rows.map(c=>`<div class="admin-row"><div><strong>${icon(c.type)} ${esc(c.name)}</strong><div class="meta">${esc(c.type)}</div></div><div class="row-actions"><button type="button" class="btn small" onclick="editDayLinkedContent(${c.id},'${d.key}')">Modifier</button><button type="button" class="btn small danger" onclick="unlinkDayContent('${d.key}',${c.id})">Retirer</button></div></div>`).join('')}</div>`;
+  return `<div class="list">${rows.map(c=>`<div class="admin-row admin-clickable" role="button" tabindex="0" onclick="editDayLinkedContent(${c.id},'${d.key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editDayLinkedContent(${c.id},'${d.key}')}" ><div><strong>${icon(c.type)} ${esc(c.name)}</strong><div class="meta">${esc(c.type)}</div></div><div class="row-actions"><button type="button" class="btn small danger" onclick="event.stopPropagation();unlinkDayContent('${d.key}',${c.id})">Retirer</button></div></div>`).join('')}</div>`;
 }
 
 function dayContentPicker(d){
