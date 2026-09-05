@@ -32,7 +32,7 @@ function contentVisual(c){
 function contentWithVisual(c){
   const visual=contentVisual(c);
   const layout=visual?'display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:10px!important;align-items:start!important;width:100%!important':'width:100%';
-  return `<div class="public-content ${visual?'has-public-visual':''}" style="${layout}">${visual}<div class="public-content-body" style="min-width:0">${c.name?`<div style="font-weight:700;margin:0 0 6px">${icon(c.type)} ${esc(c.name)}</div>`:''}<div class="resources">${contentButtons(c)}</div></div></div>`
+  return `<div class="public-content ${visual?'has-public-visual':''}" style="${layout}">${visual}<div class="public-content-body" style="min-width:0">${c.name?`<div style="font-weight:700;margin:0 0 6px">${icon(c.type)} ${esc(c.name)}</div>`:''}${c.description?`<p class="muted" style="margin:0 0 8px;white-space:pre-line">${esc(c.description)}</p>`:''}<div class="resources">${contentButtons(c)}</div></div></div>`
 }
 
 dayIntro=function(d){
