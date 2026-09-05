@@ -13,7 +13,6 @@ function contentEventMeta(c){
   return `<div class="content-event-meta">${refs.map(x=>`${esc(x.day?.label||'')} ${x.event.time?`· ${esc(x.event.time)}`:''} ${x.event.title?`· ${esc(x.event.title)}`:''}`).join('<br>')}</div>`;
 }
 function libraryMatches(c){
-  if(!audienceOk(c.audience))return false;
   if(libraryFamily==='audio'){
     if(c.type!=='Audio')return false;
     if(libraryAudioKind==='chant')return c.category==='Chants audio';
@@ -21,7 +20,7 @@ function libraryMatches(c){
     return true;
   }
   if(libraryFamily==='video')return c.type==='Vidéo';
-  if(libraryFamily==='text')return c.type==='Texte';
+  if(libraryFamily==='text')return c.type==='Texte'||c.type==='PDF';
   if(libraryFamily==='image')return c.type==='Image';
   if(libraryFamily==='pdf')return c.type==='PDF';
   return false;
