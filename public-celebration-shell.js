@@ -3,7 +3,7 @@ let publicCelebrationOpen=false;
 function celebrationPublicLabel(c){return `Archange ${c.archangel} ${c.year}`}
 function publicCelebrationChoices(){
   const list=[...state.celebrations].sort((a,b)=>String(a.year).localeCompare(String(b.year)));
-  return `<div class="celebration-home"><div class="public-page-title"><div class="eyebrow">Bienvenue</div><h1>Célébrations des Archanges</h1><p>Choisissez une célébration</p></div><div class="celebration-choice-grid">${list.map(c=>`<button class="celebration-choice" data-open-celebration="${c.id}" style="--celebration-color:${ARCHANGELS[c.archangel]||'#172033'}"><span class="eyebrow">Célébration</span><strong>${esc(celebrationPublicLabel(c))}</strong><span>${esc(c.year)}</span></button>`).join('')}</div></div>`;
+  return `<div class="celebration-home"><div class="public-page-title"><div class="eyebrow">Bienvenue</div><h1>Célébrations des Archanges</h1><p>Choisissez une célébration</p></div><div class="celebration-choice-grid">${list.map(c=>`<button class="celebration-choice" data-open-celebration="${c.id}" style="--celebration-color:${ARCHANGELS[c.archangel]||'#172033'}"><span class="eyebrow">Célébration</span><strong>${esc(celebrationPublicLabel(c))}</strong></button>`).join('')}</div></div>`;
 }
 function showCelebrationHome(updateHistory=false){
   publicCelebrationOpen=false;
@@ -13,6 +13,10 @@ function showCelebrationHome(updateHistory=false){
   hero.querySelectorAll('[data-open-celebration]').forEach(b=>b.onclick=()=>openPublicCelebration(Number(b.dataset.openCelebration),true));
   if(updateHistory)history.pushState({screen:'home'},'',location.pathname+location.search);
 }
+function goPublicHome(){
+  if(publicCelebrationOpen&&history.state?.screen==='celebration')history.back();
+  else showCelebrationHome(false);
+}
 function openPublicCelebration(id,pushHistory=false){
   const c=state.celebrations.find(x=>x.id===id);if(!c)return;
   state.currentCelebrationId=id;saveState(state);activeDay='';publicCelebrationOpen=true;setAccent();
@@ -21,15 +25,14 @@ function openPublicCelebration(id,pushHistory=false){
   hero.innerHTML=`<div class="celebration-page-head"><button class="btn small celebration-back" id="celebrationBack" type="button">‹ Célébrations</button><div><div class="eyebrow">Célébration</div><h1>${esc(celebrationPublicLabel(c))}</h1>${r.start?`<div class="date-range">${formatDate(r.start)} → ${formatDate(r.end)}</div>`:''}</div><div class="chips" id="profiles"></div></div>`;
   const box=document.getElementById('profiles');box.innerHTML=state.groups.map(g=>`<button class="chip ${state.profile===g.id?'active':''}" data-profile="${esc(g.id)}">${g.id==='all'?'Tous':esc(g.name)}</button>`).join('');
   box.querySelectorAll('[data-profile]').forEach(b=>b.onclick=()=>{state.profile=b.dataset.profile;saveState(state);openPublicCelebration(id,false)});
-  document.getElementById('celebrationBack').onclick=()=>{
-    if(history.state?.screen==='celebration')history.back();else showCelebrationHome(false);
-  };
+  document.getElementById('celebrationBack').onclick=goPublicHome;
   document.querySelector('[data-tab="program"]')?.classList.add('active');program.classList.remove('hidden');library.classList.add('hidden');info.classList.add('hidden');
   renderProgram();
 }
 const baseShowTab=showTab;
 showTab=function(tab){if(!publicCelebrationOpen){const c=current();if(c)openPublicCelebration(c.id,true);else return}baseShowTab(tab)};
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.getElementById('brandHome')?.addEventListener('click',goPublicHome);
 
 window.addEventListener('popstate',e=>{
   const s=e.state;
