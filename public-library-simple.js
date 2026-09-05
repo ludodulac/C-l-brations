@@ -1,16 +1,24 @@
 let libraryFamily='audio';
 let libraryAudioKind='all';
 
-function contentEventRefs(contentId){
-  return state.events.filter(e=>(e.contentIds||[]).includes(contentId)).map(e=>{
+function contentLocations(contentId){
+  const locations=[];
+  const add=label=>{if(label&&!locations.includes(label))locations.push(label)};
+  state.celebrations.forEach(c=>(c.days||[]).forEach(d=>{
+    if((d.contentIds||[]).includes(contentId))add(d.label);
+  }));
+  state.events.forEach(e=>{
+    if(!(e.contentIds||[]).includes(contentId))return;
     const cel=state.celebrations.find(c=>c.id===e.celebrationId);
     const day=cel?.days?.find(d=>d.key===e.dayKey);
-    return {cel,day,event:e};
+    if(day?.label)add(day.label);
   });
+  return locations;
 }
-function contentEventMeta(c){
-  const refs=contentEventRefs(c.id);if(!refs.length)return '';
-  return `<div class="content-event-meta">${refs.map(x=>`${esc(x.day?.label||'')} ${x.event.time?`· ${esc(x.event.time)}`:''} ${x.event.title?`· ${esc(x.event.title)}`:''}`).join('<br>')}</div>`;
+function contentLocationMeta(c){
+  const locations=contentLocations(c.id);if(!locations.length)return '';
+  const text=locations.length===1?`Se trouve dans ${locations[0]}`:`Se trouve dans ${locations.slice(0,-1).join(', ')} et dans ${locations[locations.length-1]}`;
+  return `<div class="content-event-meta">${esc(text)}</div>`;
 }
 function libraryMatches(c){
   if(libraryFamily==='audio'){
@@ -27,7 +35,7 @@ function libraryMatches(c){
 }
 function simpleLibraryCard(c){
   const visual=c.type==='Image'&&c.sourceType==='file'?`<img data-image-id="${c.id}" alt="${esc(c.name)}" class="library-thumb">`:c.hasCover?`<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="library-thumb">`:'';
-  const body=`<div class="simple-library-body"><div class="resource-type">${esc(c.type)}${c.type==='Audio'&&c.category?` · ${esc(c.category)}`:''}</div><h3>${esc(c.name)}</h3>${c.description?`<p class="muted">${esc(c.description)}</p>`:''}${contentEventMeta(c)}<div class="resources">${contentButtons(c)}</div></div>`;
+  const body=`<div class="simple-library-body"><div class="resource-type">${esc(c.type)}${c.type==='Audio'&&c.category?` · ${esc(c.category)}`:''}</div><h3>${esc(c.name)}</h3>${c.description?`<p class="muted">${esc(c.description)}</p>`:''}${contentLocationMeta(c)}<div class="resources">${contentButtons(c)}</div></div>`;
   return `<article class="resource-card simple-library-card ${visual?'has-library-visual':''}">${visual?`<div class="simple-library-visual">${visual}</div>`:''}${body}</article>`;
 }
 function renderLibrary(){
@@ -52,7 +60,7 @@ openContentFamily=function(category){
 const libraryStyle=document.createElement('style');
 libraryStyle.textContent=`
 body.public-app #library:not(.hidden){display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden!important;gap:10px}
-.library-fixed-head{display:grid;gap:8px}.library-fixed-head .section-head{margin:0}.library-main-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.library-main-tabs .btn{white-space:normal}.library-audio-tabs{display:flex;gap:7px;flex-wrap:wrap}.library-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:2px}.content-event-meta{font-size:.72rem;color:var(--muted);margin:7px 0 10px;line-height:1.35}
+.library-fixed-head{display:grid;gap:8px}.library-fixed-head .section-head{margin:0}.library-main-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.library-main-tabs .btn{white-space:normal}.library-audio-tabs{display:flex;gap:7px;flex-wrap:wrap}.library-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:2px}.content-event-meta{font-size:.72rem;color:var(--muted);margin:7px 0 10px;line-height:1.35;font-style:italic}
 .simple-library-card.has-library-visual{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:start}.simple-library-visual{width:92px;aspect-ratio:1/1}.library-thumb{width:100%;height:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;margin:0;background:#f3f4f6}.simple-library-body{min-width:0}.simple-library-body h3{margin-top:3px}
 @media(max-width:850px){.library-main-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.library-main-tabs .btn{font-size:.7rem;padding:7px 5px;min-height:38px}.library-audio-tabs{gap:5px}.library-audio-tabs .chip{font-size:.7rem;padding:6px 9px}.simple-library-card{padding:12px}.simple-library-card h3{font-size:.95rem;margin:5px 0}.simple-library-card .muted{font-size:.78rem;margin:5px 0}.simple-library-card.has-library-visual{display:block}.simple-library-visual{width:100%;aspect-ratio:auto}.library-thumb{width:100%;height:auto;max-height:180px;aspect-ratio:auto;object-fit:contain;margin-bottom:10px}}
 `;
