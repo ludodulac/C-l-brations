@@ -1,4 +1,4 @@
-function footerPageEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[m]))}
+function footerPageEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function footerPageHtml(text){
   return String(text||'').split(/\n/).map(line=>{
     const s=line.trim();
