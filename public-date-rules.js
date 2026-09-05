@@ -23,14 +23,12 @@ function publicDayDate(d){
   return d.startDate?formatDate(d.startDate,{day:'numeric',month:'short'}):'';
 }
 
-dayList=function(){return (current()?.days||[]).map(d=>({key:d.key,label:d.label,short:publicDayDate(d)}))};
-
 function contentVisual(c){
-  if(c.type==='Image'&&c.sourceType==='file')return `<img data-image-id="${c.id}" alt="${esc(c.name)}" style="display:block;width:100%;max-width:560px;max-height:360px;object-fit:contain;border-radius:12px;margin:10px 0;background:#f3f4f6">`;
-  if(c.hasCover)return `<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" style="display:block;width:100%;max-width:560px;max-height:360px;object-fit:contain;border-radius:12px;margin:10px 0;background:#f3f4f6">`;
+  if(c.type==='Image'&&c.sourceType==='file')return `<img data-image-id="${c.id}" alt="${esc(c.name)}" class="public-inline-image">`;
+  if(c.hasCover)return `<img data-cover-id="${c.id}" alt="Illustration de ${esc(c.name)}" class="public-inline-image">`;
   return '';
 }
-function contentWithVisual(c){return `<div class="public-content" style="width:100%">${contentVisual(c)}<div class="resources">${contentButtons(c)}</div></div>`}
+function contentWithVisual(c){const visual=contentVisual(c);return `<div class="public-content ${visual?'has-public-visual':''}">${visual}<div class="public-content-body"><div class="resources">${contentButtons(c)}</div></div></div>`}
 
 dayIntro=function(d){
   const links=(d.links||[]).filter(l=>l.url);
@@ -42,7 +40,7 @@ dayIntro=function(d){
 eventHtml=function(e){
   const c=current(),d=dayForEvent(c,e);
   const contents=(e.contentIds||[]).map(id=>state.contents.find(x=>x.id===id)).filter(Boolean).filter(x=>audienceOk(x.audience));
-  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3><div class="meta">${esc(d?.label||'')} · ${esc(groupName(state,e.audience))}</div>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div>${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
+  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3><div class="meta">${esc(d?.label||'')} · ${esc(groupName(state,e.audience))}</div>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div class="public-event-contents">${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
 };
 
 function keepActiveDayVisible(smooth=false){
