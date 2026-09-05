@@ -10,13 +10,18 @@
 <link rel="stylesheet" href="styles.css?v=32">
 <link rel="stylesheet" href="admin-compact.css?v=3">
 <link rel="stylesheet" href="admin-footer-pages.css?v=1">
+<link rel="stylesheet" href="admin-access.css?v=1">
 </head>
-<body class="admin-app">
+<body class="admin-app admin-auth-locked">
 <header class="top admin-topbar"><div class="top-inner"><div class="admin-brand">Administration</div><nav class="admin-nav"><button class="btn active" data-admin="celebrations">Célébrations</button><button class="btn" data-admin="media">Contenus</button><button class="btn" data-admin="groups">Groupes</button></nav><a class="btn admin-public-link" href="index.html">Site</a></div></header>
 <main class="container admin-main"><section id="panel"></section></main>
 <section class="footer-pages-admin" id="footerPagesAdmin"></section>
+<section class="participants-admin" id="participantsAdmin"></section>
 <div class="toast" id="toast"></div>
 <script src="app-data.js?v=32"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js?v=1"></script>
+<script src="admin-auth.js?v=1"></script>
 <script src="admin-v3.js?v=32"></script>
 <script src="admin-connect.js?v=32"></script>
 <script src="admin-date-rules.js?v=32"></script>
@@ -28,9 +33,8 @@
 <script src="admin-library-view.js?v=33"></script>
 <script src="admin-day-content-actions.js?v=35"></script>
 <script src="admin-ux.js?v=4"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-client.js?v=1"></script>
 <script src="footer-pages-data.js?v=1"></script>
-<script src="admin-footer-pages.js?v=2"></script>
+<script src="admin-footer-pages.js?v=3"></script>
+<script src="admin-participants.js?v=1"></script>
 </body>
 </html>
