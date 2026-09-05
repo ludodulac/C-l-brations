@@ -1,72 +1,97 @@
-/* Administration compacte : priorité à l'information utile, pas au vide. */
-body>.top .top-inner{max-width:1180px;padding:8px 14px;min-height:52px}
-body>.top .eyebrow{font-size:.68rem}
-body>.top .brand{font-size:.95rem}
-body>.top .btn{padding:7px 11px}
-body>.container{max-width:1180px;padding:12px 14px 36px}
-
-/* La navigation ne gaspille plus une colonne entière. */
-.admin-shell{display:block!important}
-.admin-nav{display:flex!important;gap:6px;overflow-x:auto;margin:0 0 10px;padding:0 0 6px;border-bottom:1px solid var(--line)}
-.admin-nav .btn{flex:0 0 auto;white-space:nowrap;padding:7px 12px}
+/* Administration v3 : outil dense, plat, sans blocs décoratifs inutiles. */
+body.admin-app{background:#fff}
+.admin-topbar{position:sticky!important;top:0;z-index:40;background:#fff!important}
+.admin-topbar .top-inner{max-width:1280px;min-height:48px;padding:6px 12px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+.admin-brand{font-size:.92rem;font-weight:800;white-space:nowrap}
+.admin-public-link{padding:6px 10px!important}
+.admin-nav{display:flex!important;gap:5px;overflow-x:auto;justify-content:center;min-width:0}
+.admin-nav .btn{flex:0 0 auto;white-space:nowrap;padding:6px 10px;border-radius:9px}
+.admin-nav .btn.active{background:#172033!important;color:#fff!important;border-color:#172033}
+.admin-main{max-width:1280px!important;padding:10px 12px 28px!important;min-height:auto!important}
 #panel{min-width:0}
-
-/* Le contexte répété est inutile : la navigation et le titre de la vue suffisent. */
 .admin-context{display:none!important}
 
-.admin-shell .card{padding:12px 14px;border-radius:12px}
-.admin-shell .section{margin-top:10px}
-.admin-shell .section-head{margin-bottom:7px;align-items:center}
-.admin-shell .eyebrow{font-size:.68rem;margin-bottom:3px}
-.admin-shell h2{margin:0 0 8px;font-size:1.08rem;line-height:1.2}
-.admin-shell h3{margin:10px 0 6px;font-size:.96rem}
-.admin-shell h4{margin:9px 0 5px;font-size:.9rem}
-.admin-shell .form-grid{gap:7px 10px}
-.admin-shell .field{gap:3px}
-.admin-shell .field>span{font-size:.76rem;font-weight:700;color:var(--muted)}
-.admin-shell input,.admin-shell select,.admin-shell textarea{padding:7px 9px;border-radius:9px;min-height:36px}
-.admin-shell textarea{min-height:60px;resize:vertical}
-.admin-shell .actions{gap:6px;margin-top:9px!important}
-.admin-shell .btn{padding:7px 11px}
-.admin-shell .btn.small{padding:5px 8px}
-.admin-shell .admin-row{padding:8px 10px;border-radius:10px;min-height:44px}
-.admin-shell .admin-row .meta{font-size:.78rem}
-.admin-shell .list{gap:6px}
-.admin-shell .notice{padding:8px 10px}
-.admin-shell .check{padding:7px}
-.admin-shell .searchbar{margin:6px 0 9px}
-.admin-shell .type-grid{gap:5px}
-.admin-shell .type-card{padding:8px 6px}
-.admin-shell .badge{padding:3px 7px}
+/* Hiérarchie compacte */
+.admin-view-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.admin-view-head h1,.admin-view-head h2{margin:0;font-size:1.15rem;line-height:1.15}
+.admin-subtle{font-size:.78rem;color:var(--muted)}
+.admin-toolbar{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+.admin-toolbar .field{min-width:180px;flex:1}
+.admin-toolbar .btn{flex:0 0 auto}
 
-/* Les blocs de premier niveau ne doivent pas ressembler à de grandes affiches. */
-.admin-shell>.admin-nav+section>.card:first-child{margin-top:0}
-.admin-shell .card.section+.actions{margin-top:10px!important}
+.admin-app .card{padding:10px 12px;border-radius:10px;box-shadow:none}
+.admin-app .section{margin-top:8px}
+.admin-app .section-head{margin-bottom:6px;align-items:center}
+.admin-app .eyebrow{font-size:.64rem;margin-bottom:2px}
+.admin-app h2{margin:0 0 7px;font-size:1.05rem;line-height:1.15}
+.admin-app h3{margin:8px 0 5px;font-size:.92rem}
+.admin-app h4{margin:7px 0 4px;font-size:.86rem}
+.admin-app .form-grid{gap:6px 8px}
+.admin-app .field{gap:2px}
+.admin-app .field>span{font-size:.72rem;font-weight:700;color:var(--muted)}
+.admin-app input,.admin-app select,.admin-app textarea{padding:6px 8px;border-radius:8px;min-height:34px}
+.admin-app textarea{min-height:54px;resize:vertical}
+.admin-app .actions{gap:5px;margin-top:7px!important}
+.admin-app .btn{padding:6px 10px;border-radius:9px}
+.admin-app .btn.small{padding:4px 7px;font-size:.8rem}
+.admin-app .admin-row{padding:7px 9px;border-radius:9px;min-height:40px}
+.admin-app .admin-row .meta{font-size:.74rem}
+.admin-app .list{gap:5px}
+.admin-app .notice{padding:7px 9px;font-size:.82rem}
+.admin-app .check{padding:6px}
+.admin-app .searchbar{margin:5px 0 8px}
+.admin-app .type-grid{gap:4px}
+.admin-app .type-card{padding:7px 5px}
+.admin-app .badge{padding:2px 6px;font-size:.7rem}
+.admin-app .resource-card{padding:9px;border-radius:10px}
+.admin-app .resource-card h3{margin:3px 0 5px}
+.admin-app .resource-card p{margin:4px 0}
 
-/* Retour utilisateur : devant, centré, impossible à manquer. */
-.toast{left:50%!important;right:auto!important;top:14px!important;bottom:auto!important;transform:translateX(-50%)!important;min-width:min(420px,calc(100vw - 28px));max-width:calc(100vw - 28px);text-align:center;font-weight:800;box-shadow:0 10px 32px rgba(23,32,51,.20);border:1px solid transparent;padding:10px 16px}
+/* Édition célébration : tout tient haut, étapes en grille. */
+.celebration-editor{display:grid;gap:8px}
+.celebration-settings{display:grid;grid-template-columns:minmax(180px,1fr) minmax(140px,.7fr) auto;gap:8px;align-items:end}
+.celebration-settings .field{min-width:0}
+.steps-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+.steps-grid .admin-row{height:100%}
+
+/* Édition d'étape : le principal en haut, contenus/rendez-vous côte à côte. */
+.day-editor{display:grid;gap:8px}
+.day-editor-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.day-editor-main .day-fields{min-width:0}
+.day-editor-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+.day-editor-columns>.card{margin-top:0!important}
+
+/* Bibliothèque plus dense */
+.admin-library-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+.admin-library-tabs .chip{padding:6px 9px}
+.admin-library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+
+/* Messages vraiment visibles */
+.toast{left:50%!important;right:auto!important;top:10px!important;bottom:auto!important;transform:translateX(-50%)!important;min-width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);text-align:center;font-weight:800;box-shadow:0 10px 32px rgba(23,32,51,.2);border:1px solid transparent;padding:9px 14px}
 .toast.error{background:#fff1f0!important;color:#b42318!important;border-color:#f3b5b0}
 .toast.success{background:#ecfdf3!important;color:#067647!important;border-color:#abefc6}
 
-@media(min-width:700px){
-  .admin-shell .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .admin-shell .field.full{grid-column:1/-1}
+@media(max-width:900px){
+  .admin-topbar .top-inner{grid-template-columns:auto 1fr auto}
+  .admin-nav{justify-content:flex-start}
+  .admin-library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:699px){
-  body>.top .top-inner{display:flex;flex-direction:row;align-items:center;padding:7px 10px}
-  body>.top .brand{font-size:.82rem}
-  body>.top .eyebrow{display:none}
-  body>.container{padding:8px 10px 28px}
-  .admin-nav{margin-bottom:8px}
-  .admin-shell .card{padding:10px}
-  .admin-shell .section{margin-top:8px}
-  .admin-shell .form-grid{grid-template-columns:1fr}
-  .admin-shell .field.full{grid-column:auto}
-  .admin-shell .admin-row{align-items:flex-start}
-  .admin-shell .row-actions{gap:4px}
+@media(max-width:720px){
+  .admin-topbar .top-inner{grid-template-columns:auto auto;gap:6px}
+  .admin-brand{font-size:.82rem}
+  .admin-public-link{justify-self:end}
+  .admin-nav{grid-column:1/-1;order:3;justify-content:flex-start;padding-bottom:1px}
+  .admin-main{padding:7px 8px 22px!important}
+  .celebration-settings{grid-template-columns:1fr 1fr}
+  .celebration-settings .btn{grid-column:1/-1;justify-self:start}
+  .steps-grid,.day-editor-columns{grid-template-columns:1fr}
+  .day-editor-main{grid-template-columns:1fr}
+  .admin-app .form-grid{grid-template-columns:1fr}
+  .admin-app .field.full{grid-column:auto}
 }
 @media(max-width:520px){
-  .admin-shell .admin-row{display:grid}
-  .admin-shell .row-actions{width:100%}
-  .admin-shell .row-actions .btn{flex:1}
+  .admin-app .admin-row{display:grid}
+  .admin-app .row-actions{width:100%;gap:4px}
+  .admin-app .row-actions .btn{flex:1}
+  .admin-library-grid{grid-template-columns:1fr}
 }
