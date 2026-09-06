@@ -17,5 +17,11 @@ async function loadStateFromSupabase(){
 }
 async function supabaseMediaUrl(path){return path?`${CELEBRATIONS_SUPABASE_URL}/storage/v1/object/public/${CELEBRATIONS_MEDIA_BUCKET}/${String(path).split('/').map(encodeURIComponent).join('/')}`:''}
 async function getMedia(key){const s=typeof state!=='undefined'?state:null;const c=s?.contents?.find(x=>String(x.id)===String(key).replace(/^cover-/,''));if(!c)return null;const path=String(key).startsWith('cover-')?c.coverStoragePath:c.storagePath;if(!path)return null;const r=await fetch(await supabaseMediaUrl(path),{headers:{apikey:CELEBRATIONS_SUPABASE_KEY}});return r.ok?await r.blob():null}
-async function openStoredFile(content,download=false){const path=content?.storagePath;if(!path)return alert('Fichier indisponible.');const url=await supabaseMediaUrl(path);if(download){const r=await fetch(url);const b=await r.blob();const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=content.fileName||content.name;a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)}else window.open(url,'_blank','noopener')}
+async function openStoredFile(content,download=false){
+ const path=content?.storagePath;if(!path)return alert('Fichier indisponible.');const url=await supabaseMediaUrl(path);
+ if(download){const r=await fetch(url);const b=await r.blob();const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=content.fileName||content.name;a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);return}
+ const popup=window.open('','_blank');
+ try{const r=await fetch(url);if(!r.ok)throw new Error('Fichier indisponible');const b=await r.blob();const mime=content.mimeType||b.type||'';const u=URL.createObjectURL(new Blob([b],{type:mime||'application/octet-stream'}));if(popup){popup.location.href=u;setTimeout(()=>URL.revokeObjectURL(u),60000)}else{window.location.href=u}}
+ catch(e){if(popup)popup.close();alert('Impossible d’ouvrir ce contenu.')}
+}
 async function attachAudioPlayer(container,content){const path=content?.storagePath;if(!path){container.innerHTML='<span class="muted">Fichier audio indisponible.</span>';return}const a=document.createElement('audio');a.controls=true;a.preload='metadata';a.src=await supabaseMediaUrl(path);a.style.width='100%';container.appendChild(a)}
