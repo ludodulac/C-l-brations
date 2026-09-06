@@ -1,11 +1,20 @@
 let publicCelebrationOpen=false;
+let publicShowOtherCelebrations=false;
 
 function celebrationPublicLabel(c){return `Archange ${c.archangel} ${c.year}`}
+async function loadPublicCelebrationVisibility(){
+  const sb=window.celebrationsSupabase||null;
+  if(!sb)return false;
+  try{const {data,error}=await sb.functions.invoke('celebrations-visibility',{body:{action:'get'}});if(!error&&data?.ok)publicShowOtherCelebrations=!!data.show_other_celebrations}catch(e){}
+  return publicShowOtherCelebrations;
+}
 function publicCelebrationChoices(){
-  const list=[...state.celebrations].sort((a,b)=>String(a.year).localeCompare(String(b.year)));
+  const all=[...state.celebrations].sort((a,b)=>String(a.year).localeCompare(String(b.year)));
+  const list=publicShowOtherCelebrations?all:all.filter(c=>c.id===state.currentCelebrationId);
   return `<div class="celebration-home"><div class="public-page-title"><div class="eyebrow">Bienvenue</div><p>Choisissez une célébration</p></div><div class="celebration-choice-grid">${list.map(c=>`<button class="celebration-choice" data-open-celebration="${c.id}" style="--celebration-color:${ARCHANGELS[c.archangel]||'#172033'}"><strong>${esc(celebrationPublicLabel(c))}</strong></button>`).join('')}</div></div>`;
 }
 function showCelebrationHome(updateHistory=false){
+  if(!publicShowOtherCelebrations){const c=current();if(c){openPublicCelebration(c.id,updateHistory);return}}
   publicCelebrationOpen=false;
   hero.innerHTML=publicCelebrationChoices();
   program.classList.add('hidden');library.classList.add('hidden');info.classList.add('hidden');
@@ -14,11 +23,13 @@ function showCelebrationHome(updateHistory=false){
   if(updateHistory)history.pushState({screen:'home'},'',location.pathname+location.search);
 }
 function goPublicHome(){
+  if(!publicShowOtherCelebrations){const c=current();if(c)openPublicCelebration(c.id,false);return}
   if(publicCelebrationOpen&&history.state?.screen==='celebration')history.back();
   else showCelebrationHome(false);
 }
 function openPublicCelebration(id,pushHistory=false){
-  const c=state.celebrations.find(x=>x.id===id);if(!c)return;
+  let c=state.celebrations.find(x=>x.id===id);if(!c)return;
+  if(!publicShowOtherCelebrations&&c.id!==state.currentCelebrationId){c=state.celebrations.find(x=>x.id===state.currentCelebrationId);if(!c)return;id=c.id}
   state.currentCelebrationId=id;saveState(state);activeDay='';publicCelebrationOpen=true;setAccent();
   if(pushHistory)history.pushState({screen:'celebration',id},'',`#celebration-${id}`);
   const r=celebrationRange(c);
@@ -35,13 +46,18 @@ document.getElementById('brandHome')?.addEventListener('click',goPublicHome);
 
 window.addEventListener('popstate',e=>{
   const s=e.state;
-  if(s?.screen==='celebration'&&state.celebrations.some(c=>c.id===Number(s.id)))openPublicCelebration(Number(s.id),false);
+  if(publicShowOtherCelebrations&&s?.screen==='celebration'&&state.celebrations.some(c=>c.id===Number(s.id)))openPublicCelebration(Number(s.id),false);
   else showCelebrationHome(false);
 });
 
-const initialMatch=location.hash.match(/^#celebration-(\d+)$/);
-if(initialMatch&&state.celebrations.some(c=>c.id===Number(initialMatch[1]))){
-  const id=Number(initialMatch[1]);history.replaceState({screen:'celebration',id},'',location.href);openPublicCelebration(id,false);
-}else{
-  history.replaceState({screen:'home'},'',location.pathname+location.search);showCelebrationHome(false);
-}
+(async()=>{
+  await loadPublicCelebrationVisibility();
+  const initialMatch=location.hash.match(/^#celebration-(\d+)$/);
+  if(publicShowOtherCelebrations&&initialMatch&&state.celebrations.some(c=>c.id===Number(initialMatch[1]))){
+    const id=Number(initialMatch[1]);history.replaceState({screen:'celebration',id},'',location.href);openPublicCelebration(id,false);
+  }else if(publicShowOtherCelebrations){
+    history.replaceState({screen:'home'},'',location.pathname+location.search);showCelebrationHome(false);
+  }else{
+    const c=current();history.replaceState({screen:'celebration',id:c?.id||null},'',location.pathname+location.search);if(c)openPublicCelebration(c.id,false);else showCelebrationHome(false);
+  }
+})();
