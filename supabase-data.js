@@ -17,11 +17,18 @@ async function loadStateFromSupabase(){
 }
 async function supabaseMediaUrl(path){return path?`${CELEBRATIONS_SUPABASE_URL}/storage/v1/object/public/${CELEBRATIONS_MEDIA_BUCKET}/${String(path).split('/').map(encodeURIComponent).join('/')}`:''}
 async function getMedia(key){const s=typeof state!=='undefined'?state:null;const c=s?.contents?.find(x=>String(x.id)===String(key).replace(/^cover-/,''));if(!c)return null;const path=String(key).startsWith('cover-')?c.coverStoragePath:c.storagePath;if(!path)return null;const r=await fetch(await supabaseMediaUrl(path),{headers:{apikey:CELEBRATIONS_SUPABASE_KEY}});return r.ok?await r.blob():null}
+function escPreviewText(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 async function openStoredFile(content,download=false){
  const path=content?.storagePath;if(!path)return alert('Fichier indisponible.');const url=await supabaseMediaUrl(path);
- if(download){const r=await fetch(url);const b=await r.blob();const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=content.fileName||content.name;a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);return}
- const popup=window.open('','_blank');
- try{const r=await fetch(url);if(!r.ok)throw new Error('Fichier indisponible');const b=await r.blob();const mime=content.mimeType||b.type||'';const u=URL.createObjectURL(new Blob([b],{type:mime||'application/octet-stream'}));if(popup){popup.location.href=u;setTimeout(()=>URL.revokeObjectURL(u),60000)}else{window.location.href=u}}
- catch(e){if(popup)popup.close();alert('Impossible d’ouvrir ce contenu.')}
+ if(download){const r=await fetch(url);if(!r.ok)return alert('Téléchargement impossible.');const b=await r.blob();const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=content.fileName||content.name||'fichier';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);return}
+ const popup=window.open('about:blank','_blank');
+ try{
+  const r=await fetch(url);if(!r.ok)throw new Error('Fichier indisponible');const b=await r.blob();const mime=(content.mimeType||b.type||'').toLowerCase();const u=URL.createObjectURL(new Blob([b],{type:mime||'application/octet-stream'}));
+  if(!popup){window.open(url,'_blank','noopener');return}
+  const title=escPreviewText(content.name||content.fileName||'Contenu');
+  const body=mime.startsWith('image/')?`<img src="${u}" alt="${title}" style="display:block;max-width:100%;max-height:calc(100vh - 64px);margin:auto;object-fit:contain">`:mime==='application/pdf'?`<iframe src="${u}" title="${title}" style="width:100%;height:100vh;border:0"></iframe>`:mime.startsWith('audio/')?`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><div style="width:min(720px,100%)"><h1 style="font:600 22px system-ui;margin:0 0 18px">${title}</h1><audio controls autoplay src="${u}" style="width:100%"></audio></div></div>`:mime.startsWith('video/')?`<video controls autoplay src="${u}" style="display:block;width:100%;height:100vh;object-fit:contain;background:#000"></video>`:`<iframe src="${u}" title="${title}" style="width:100%;height:100vh;border:0"></iframe>`;
+  popup.document.open();popup.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>html,body{margin:0;min-height:100%;background:#111;color:#fff}body{font-family:system-ui,sans-serif}</style></head><body>${body}</body></html>`);popup.document.close();
+  popup.addEventListener('beforeunload',()=>URL.revokeObjectURL(u),{once:true});setTimeout(()=>URL.revokeObjectURL(u),30*60*1000);
+ }catch(e){if(popup)popup.close();alert('Impossible d’ouvrir ce contenu.')}
 }
 async function attachAudioPlayer(container,content){const path=content?.storagePath;if(!path){container.innerHTML='<span class="muted">Fichier audio indisponible.</span>';return}const a=document.createElement('audio');a.controls=true;a.preload='metadata';a.src=await supabaseMediaUrl(path);a.style.width='100%';container.appendChild(a)}
