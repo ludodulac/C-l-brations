@@ -2,10 +2,21 @@
   const sb=window.celebrationsSupabase||null;
   const PREF_KEY='celebrations-admin-preferences';
   let coreReady=false,syncing=false,pending=null;
+  const pendingMedia=new Map();
 
   function preferences(){try{return JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}catch(e){return {}}}
   function savePreferences(s){localStorage.setItem(PREF_KEY,JSON.stringify({adminCelebrationId:s.adminCelebrationId||null}))}
-  function snapshot(s){return {celebrations:JSON.parse(JSON.stringify(s.celebrations||[])),events:JSON.parse(JSON.stringify(s.events||[]))}}
+  function cloneData(v){return JSON.parse(JSON.stringify(v||[]))}
+  function applyPendingMedia(s){
+    for(const [key,meta] of pendingMedia){
+      const cover=key.startsWith('cover-'),id=cover?key.slice(6):key;
+      const c=(s.contents||[]).find(x=>String(x.id)===String(id));if(!c)continue;
+      if(cover){c.hasCover=true;c.coverStoragePath=meta.path;c.coverFileName=meta.fileName}
+      else{c.storagePath=meta.path;c.fileName=meta.fileName;c.mimeType=meta.mimeType||'';c.sourceType='file'}
+      pendingMedia.delete(key);
+    }
+  }
+  function snapshot(s){applyPendingMedia(s);return {celebrations:cloneData(s.celebrations),events:cloneData(s.events),contents:cloneData(s.contents),groups:cloneData(s.groups)}}
 
   async function invoke(payload){
     if(!sb)return {ok:false,error:'Connexion Supabase indisponible.'};
@@ -21,7 +32,7 @@
     while(pending){
       const data=pending;pending=null;
       window.celebrationsCoreSyncStatus='saving';
-      const result=await invoke({action:'replace_core',...data});
+      const result=await invoke({action:'replace_all',...data});
       if(!result.ok){
         window.celebrationsCoreSyncStatus='error';
         console.error('Synchronisation Supabase',result.error);
@@ -43,6 +54,24 @@
   };
   window.celebrationsFlushCore=async()=>{pending=snapshot(state);await flush()};
 
+  window.putMedia=async function(key,file){
+    if(!file)throw new Error('Fichier manquant');
+    const raw=String(key),cover=raw.startsWith('cover-'),contentId=cover?raw.slice(6):raw;
+    const signed=await invoke({action:'create_upload',content_id:contentId,kind:cover?'cover':'file',file_name:file.name});
+    if(!signed.ok||!signed.path||!signed.token)throw new Error(signed.error||'Préparation de l’upload impossible.');
+    const {error}=await sb.storage.from(CELEBRATIONS_MEDIA_BUCKET).uploadToSignedUrl(signed.path,signed.token,file,{contentType:file.type||undefined});
+    if(error)throw error;
+    pendingMedia.set(raw,{path:signed.path,fileName:file.name,mimeType:file.type||''});
+    return signed.path;
+  };
+  window.deleteMedia=async function(key){
+    const raw=String(key),cover=raw.startsWith('cover-'),id=cover?raw.slice(6):raw;
+    const c=(state.contents||[]).find(x=>String(x.id)===String(id));
+    const path=cover?c?.coverStoragePath:c?.storagePath;if(!path)return;
+    const result=await invoke({action:'delete_paths',paths:[path]});if(!result.ok)throw new Error(result.error||'Suppression impossible.');
+    if(cover){c.hasCover=false;c.coverStoragePath='';c.coverFileName=''}else{c.storagePath='';c.fileName='';c.mimeType=''}
+  };
+
   async function boot(){
     if(window.celebrationsAdminReady)await window.celebrationsAdminReady;
     if(typeof loadStateFromSupabase!=='function')return;
@@ -54,6 +83,7 @@
       if(typeof ensureFixedSteps==='function')state.celebrations.forEach(ensureFixedSteps);
       coreReady=true;
       localStorage.removeItem('celebrations-state');
+      try{indexedDB.deleteDatabase('celebrations-media-v1')}catch(e){}
       window.celebrationsCoreSyncStatus='saved';
       render();
       window.dispatchEvent(new CustomEvent('celebrations-core-ready'));
