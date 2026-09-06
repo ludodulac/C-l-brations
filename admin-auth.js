@@ -28,7 +28,7 @@
     document.getElementById('adminPasswordForm').onsubmit=async e=>{
       e.preventDefault();const password=document.getElementById('adminGatePassword').value;
       const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Vérification…';
-      const result=await window.celebrationsAccessInvoke('admin_login',{password});
+      const result=await window.celebrationsAccessInvoke('admin_login',{email:'admin@celebrations.local',password});
       if(!result.ok||!result.token){showGate(result.error||'Mot de passe incorrect.');return}
       localStorage.setItem(TOKEN_KEY,result.token);unlock();
     };
