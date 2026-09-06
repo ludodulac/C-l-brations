@@ -52,9 +52,8 @@ dayIntro=function(d){
 };
 
 eventHtml=function(e){
-  const c=current(),d=dayForEvent(c,e);
   const contents=(e.contentIds||[]).map(id=>state.contents.find(x=>x.id===id)).filter(Boolean).filter(x=>audienceOk(x.audience));
-  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3><div class="meta">${esc(d?.label||'')} · ${esc(groupName(state,e.audience))}</div>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div class="public-event-contents" style="display:grid;gap:8px;margin-top:8px">${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
+  return `<article class="event"><div class="time">${esc(e.time||'—')}</div><div><h3 style="margin:0 0 5px">${esc(e.title)}</h3>${e.description?`<p>${esc(e.description)}</p>`:''}${contents.length?`<div class="public-event-contents" style="display:grid;gap:8px;margin-top:8px">${contents.map(contentWithVisual).join('')}</div>`:''}</div></article>`;
 };
 
 function keepActiveDayVisible(smooth=false){
