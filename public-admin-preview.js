@@ -4,8 +4,12 @@
   const PROFILE_KEY='celebrations-public-profile-chosen';
   const TEST_BACKUP_TOKEN='celebrations-test-backup-participant-token';
   const TEST_BACKUP_PROFILE='celebrations-test-backup-profile';
-  const testMode=new URLSearchParams(location.search).get('participant-test')==='1';
+  const params=new URLSearchParams(location.search);
+  const testMode=params.get('participant-test')==='1';
+  const requestedProfile=params.get('admin-profile');
+  const previewProfile=requestedProfile==='angel'||requestedProfile==='nonangel'?requestedProfile:'';
   const sb=window.celebrationsSupabase||null;
+  window.CELEBRATIONS_ADMIN_PREVIEW_PROFILE=previewProfile;
 
   if(testMode){
     if(!sessionStorage.getItem(TEST_BACKUP_TOKEN))sessionStorage.setItem(TEST_BACKUP_TOKEN,localStorage.getItem(PARTICIPANT_TOKEN_KEY)||'');
@@ -27,16 +31,30 @@
       };
     };
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showBanner);else showBanner();
+    window.celebrationsAdminPreviewReady=Promise.resolve(false);
     return;
   }
 
   const adminToken=localStorage.getItem(ADMIN_TOKEN_KEY)||'';
-  if(!adminToken||!sb)return;
+  if(!adminToken||!sb){window.celebrationsAdminPreviewReady=Promise.resolve(false);return}
   document.body.classList.add('admin-public-bypass-pending');
   const style=document.createElement('style');style.id='adminPublicBypassStyle';style.textContent='body.admin-public-bypass-pending .public-profile-gate{display:none!important}';document.head.appendChild(style);
-  (async()=>{
+  window.celebrationsAdminPreviewReady=(async()=>{
     const {data,error}=await sb.functions.invoke('celebrations-access',{body:{action:'admin_session',admin_token:adminToken}});
-    if(!error&&data?.ok){document.getElementById('publicProfileGate')?.remove();document.body.classList.remove('profile-gate-open')}
+    const ok=!error&&data?.ok;
+    if(ok){
+      if(previewProfile){
+        localStorage.setItem(PROFILE_KEY,previewProfile);
+        if(typeof state!=='undefined'){
+          state.profile=previewProfile;
+          try{saveState(state)}catch(e){}
+          try{renderProgram()}catch(e){}
+          try{renderLibrary()}catch(e){}
+        }
+      }
+      document.getElementById('publicProfileGate')?.remove();document.body.classList.remove('profile-gate-open');
+    }
     document.body.classList.remove('admin-public-bypass-pending');document.getElementById('adminPublicBypassStyle')?.remove();
+    return ok;
   })();
 })();
