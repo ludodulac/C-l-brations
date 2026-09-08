@@ -30,13 +30,12 @@ function goPublicHome(){
 function openPublicCelebration(id,pushHistory=false){
   let c=state.celebrations.find(x=>x.id===id);if(!c)return;
   if(!publicShowOtherCelebrations&&c.id!==state.currentCelebrationId){c=state.celebrations.find(x=>x.id===state.currentCelebrationId);if(!c)return;id=c.id}
-  state.currentCelebrationId=id;saveState(state);activeDay='';publicCelebrationOpen=true;setAccent();
+  state.currentCelebrationId=id;state.profile='all';saveState(state);activeDay='';publicCelebrationOpen=true;setAccent();
   if(pushHistory)history.pushState({screen:'celebration',id},'',`#celebration-${id}`);
   const r=celebrationRange(c);
-  hero.innerHTML=`<div class="celebration-page-head"><div class="celebration-title-block"><h1>${esc(celebrationPublicLabel(c))}</h1>${r.start?`<div class="date-range">${formatDate(r.start)} → ${formatDate(r.end)}</div>`:''}</div><div class="chips" id="profiles"></div></div>`;
-  const box=document.getElementById('profiles');box.innerHTML=state.groups.map(g=>`<button class="chip ${state.profile===g.id?'active':''}" data-profile="${esc(g.id)}">${g.id==='all'?'Tous':esc(g.name)}</button>`).join('');
-  box.querySelectorAll('[data-profile]').forEach(b=>b.onclick=()=>{state.profile=b.dataset.profile;saveState(state);openPublicCelebration(id,false)});
-  document.querySelector('[data-tab="program"]')?.classList.add('active');program.classList.remove('hidden');library.classList.add('hidden');info.classList.add('hidden');
+  hero.innerHTML=`<div class="celebration-page-head"><div class="celebration-title-block"><h1>${esc(celebrationPublicLabel(c))}</h1>${r.start?`<div class="date-range">${formatDate(r.start)} → ${formatDate(r.end)}</div>`:''}<nav class="nav celebration-inner-nav" aria-label="Navigation de la célébration"><button class="nav-btn active" data-tab="program">Programme</button><button class="nav-btn" data-tab="library">Médiathèque</button></nav></div></div>`;
+  hero.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+  program.classList.remove('hidden');library.classList.add('hidden');info.classList.add('hidden');
   renderProgram();
 }
 const baseShowTab=showTab;
