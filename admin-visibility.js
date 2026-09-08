@@ -1,4 +1,9 @@
 (function(){
+  // Capacité conservée volontairement mais masquée dans l'administration.
+  // Si plusieurs célébrations doivent redevenir visibles un jour, remettre ce drapeau à true.
+  const ENABLE_OTHER_CELEBRATIONS_ADMIN=false;
+  if(!ENABLE_OTHER_CELEBRATIONS_ADMIN)return;
+
   const host=document.createElement('section');host.id='celebrationVisibilityAdmin';host.className='footer-pages-admin';
   const participants=document.getElementById('participantsAdmin');
   (participants?.parentNode||document.body).insertBefore(host,participants?.nextSibling||null);
