@@ -2,7 +2,7 @@
 
 ## Contexte transversal
 
-Célébrations appartient à l'écosystème **`ludodulac/Grand-p-re-`**. Le slug GitHub de Grand Père utilise des tirets à la place des caractères accentués. En nouvelle conversation : lire Grand Père `AI_START_HERE.md`, la fiche Célébrations via `projects/_INDEX.md` et `LOOP_ENGINEERING.md`, puis revenir ici. **Célébrations reste l'autorité sur code chargé, Supabase, données, règles et comportement déployé.**
+Célébrations appartient à l'écosystème **`ludodulac/Grand-pere`**. Grand Père est documenté dans le dépôt `ludodulac/Grand-pere`. En nouvelle conversation : lire Grand Père `AI_START_HERE.md`, la fiche Célébrations via `projects/_INDEX.md` et `LOOP_ENGINEERING.md`, puis revenir ici. **Célébrations reste l'autorité sur code chargé, Supabase, données, règles et comportement déployé.**
 
 Ce fichier est un routeur. Utiliser aussi `PROJECT_MAP.md` et ne charger que la zone utile.
 
